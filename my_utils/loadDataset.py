@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 #import torch library to build neural network
@@ -10,7 +10,7 @@ import torch.nn as nn # Several layer architectur is define here
 import torch.nn.functional as F # loss function and activation function
 
 
-# In[2]:
+# In[ ]:
 
 
 """
@@ -30,7 +30,7 @@ from torchvision.utils import make_grid
 from torchvision import datasets, models, transforms
 
 
-# In[3]:
+# In[ ]:
 
 
 import os
@@ -41,7 +41,7 @@ def ensure_dir(dir_path):
         os.makedirs(directory)
 
 
-# In[4]:
+# In[ ]:
 
 
 ######################## Input ###############################
@@ -61,19 +61,19 @@ def setFolderLocation(datasets, selectedDataset='', train='train', test='test'):
     # zipFile = False
 
 
-# In[5]:
+# In[ ]:
 
 
 #setFolderLocation('/home/pragnesh/Dataset/', 'IntelIC', 'train', 'test')
 
 
-# In[6]:
+# In[ ]:
 
 
 #print(data_dir)
 
 
-# In[14]:
+# In[ ]:
 
 
 #Data Prepration
@@ -97,7 +97,7 @@ def extractData(destLoc):
   zip_ref.close()
 
 
-# In[8]:
+# In[1]:
 
 
 """
@@ -149,4 +149,10 @@ def dataLoader():
     dataset_sizes = {x: len(image_datasets[x]) for x in [trainDir, testDir]}
     class_names = image_datasets[trainDir].classes
     return dataloaders
+
+
+# In[ ]:
+
+
+
 
