@@ -23,6 +23,16 @@ def getBlockList(modelname):
     if modelname == 'vgg16bn':
         blocks    = [2, 2, 3, 3, 3]
     return blocks
+def createBlockList(newModel):
+    blockList = []
+    count = 0
+    for i in range(len(newModel.features)):
+        if str(newModel.features[i]).find('Conv') != -1:
+            count+=1
+        elif str(newModel.features[i]).find('Pool') != -1:
+            blockList.append(count)
+            count = 0
+    return blockList
 
 
 '''In[3]: each vgg net parameter is distributed in feature list and classifier list
@@ -51,13 +61,21 @@ def getFeatureList(modelname):
     return feature_list
 
 
+def createFeatureList(newModel):
+    convListIdx = [ ]
+    for i in range(len(newModel.features)):
+        if str(newModel.features[i]).find('Conv') != -1:
+            convListIdx.append(i)
+    return convListIdx      
+
 ''' In[4]: extract the feature and store in the list for convinience in use
 '''
-def getPruneModule(newModel,prunelist):
-    module = []
-    for i in prunelist:
-        module.append(newModel.features[i])
-    return module        
+def getPruneModule(newModel):
+    convList = [ ]
+    for i in range(len(newModel.features)):
+        if str(newModel.features[i]).find('Conv') != -1:
+            convList.append(newModel.features[i])
+    return convList      
 
 
 '''In[5]: we can prune different number of kernel from different list

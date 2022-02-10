@@ -74,8 +74,6 @@ def epoch_end(epoch, result):
 
 
 # In[3]:
-
-
 """## Define Training 
 Here we will evalute our model after each epoch on validation dataset using evalute method
 get_lr method returnd last learning rate used in the training
@@ -84,8 +82,6 @@ rate start from 1/10th value of max_lr and slowly increases the value to max_lr 
 then decreases to its initial value for 40% updates and then further decreases to 1/100th of max_lr 
 value to perform final fine tuning.
 """
-
-
 # evalute model on given dataset using given data loader
 @torch.no_grad()
 # evalute model on given dataset using given data loader

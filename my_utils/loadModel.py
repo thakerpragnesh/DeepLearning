@@ -2,19 +2,14 @@
 # coding: utf-8
 
 # In[1]:
-
-
 #import torch library to build neural network
 import torch  # Elementory function of tensor is define in torch package
 import torch.nn as nn # Several layer architectur is define here
 import torch.nn.functional as F # loss function and activation function
 
 
-# In[2]:
-
-
-"""
-Computer vision is one of the most important application and thus lots 
+#In[2]:
+"""Computer vision is one of the most important application and thus lots 
 of deplopment in the and torch.vision provides many facilities that can 
 be use to imporve model such as data augmentation, reading data batchwise, 
 suffling data before each epoch and many more
@@ -31,16 +26,12 @@ from torchvision import datasets, models, transforms
 
 
 # In[3]:
-
-
 vgg11_feature_list = [64, "M", 128, "M", 256, 256, "M", 512, 512, "M", 512, 512, "M"]
 vgg13_feature_list = [64, 64, "M", 128, 128, "M", 256, 256, "M", 512, 512, "M", 512, 512, "M"]
 vgg16_feature_list = [64, 64, "M", 128, 128, "M", 256, 256, 256, "M", 512, 512, 512, "M", 512, 512, 512, "M"]
 
 
 # In[4]:
-
-
 def get_device_type():
     if torch.cuda.is_available():
         return torch.device('cuda')
@@ -49,17 +40,15 @@ def get_device_type():
 
 
 # In[5]:
-
-
-def load_model(model_name,number_of_class,pretrainval=False,freeze_feature=False,device_l=torch.device('cpu')):
+def load_model(model_name, number_of_class, pretrainval=False, freeze_feature=False, device_l=torch.device('cpu')):
     device = device_l
     if model_name == 'vgg16' or model_name == 'vgg13' or model_name == 'vgg11':
         if model_name == 'vgg11':
             new_model = torchvision.models.vgg11(pretrained=pretrainval)
         if model_name == 'vgg13':
-            new_model = torchvision.models.vgg13(pretrained=False)
+            new_model = torchvision.models.vgg13(pretrained=pretrainval)
         if model_name == 'vgg16':
-            new_model = torchvision.models.vgg16(pretrained=False)
+            new_model = torchvision.models.vgg16(pretrained=pretrainval)
             print('VGG16 Loaded')
         if freeze_feature:
             for param in new_model.parameters():
@@ -77,9 +66,9 @@ def load_model(model_name,number_of_class,pretrainval=False,freeze_feature=False
         if model_name == 'vgg11bn':
             new_model = torchvision.models.vgg11_bn(pretrained=pretrainval)
         if model_name == 'vgg13bn':
-            new_model = torchvision.models.vgg13_bn(pretrained=False)
+            new_model = torchvision.models.vgg13_bn(pretrained=pretrainval)
         if model_name == 'vgg16bn':
-            new_model = torchvision.models.vgg16_bn(pretrained=False)    
+            new_model = torchvision.models.vgg16_bn(pretrained=pretrainval)    
         if freeze_feature:
             for param in new_model.parameters():
                 param.requires_grad = False
@@ -110,18 +99,15 @@ def load_model(model_name,number_of_class,pretrainval=False,freeze_feature=False
 
 
 # In[6]:
-
-
-def load_saved_model(load_path):
+def load_saved_model(load_path,device):
     if device== torch.device('cpu'):
-        new_model = torch.load(load_path, map_location=torch.device('cpu'))
+        return torch.load(load_path, map_location=torch.device('cpu'))
     else:
-        new_model = torch.load(load_path, map_location=torch.device('cuda'))
+        return torch.load(load_path, map_location=torch.device('cuda'))
+    r
 
 
 # In[7]:
-
-
 def freeze(model,model_name):
     if model_name == 'vgg16':
         for param in model.parameters():
@@ -146,8 +132,6 @@ def freeze(model,model_name):
 
 
 # In[8]:
-
-
 def freeze_feature(model,model_name):
     if model_name == 'vgg16':
         for param in model.parameters():
@@ -172,16 +156,12 @@ def freeze_feature(model,model_name):
 
 
 # In[9]:
-
-
 def unfreeze(model,model_name):
     for param in model.parameters():
         param.requires_grad=True
 
 
 # In[10]:
-
-
 ###Define a VggNet Architecture
 from typing import Union, List, Dict, Any, cast
 class VGG(nn.Module):
@@ -223,7 +203,6 @@ class VGG(nn.Module):
                 nn.init.normal_(m.weight, 0, 0.01)
                 nn.init.constant_(m.bias, 0)
 
-    
 def make_layers(cfg: List[Union[str, int]], batch_norm: bool = False) -> nn.Sequential:
     layers: List[nn.Module] = []
     in_channels = 3
@@ -243,16 +222,10 @@ def make_layers(cfg: List[Union[str, int]], batch_norm: bool = False) -> nn.Sequ
     return nn.Sequential(*layers)
 
 
+# In[ 11]:
 def create_vgg_from_feature_list(VggFeatureList, batch_norm: bool=False, progress: bool=False) -> VGG:
     
     #Calling the constructer here
     feature = make_layers(VggFeatureList, batch_norm=batch_norm)
     model = VGG( feature )
     return model
-
-
-# In[ ]:
-
-
-
-
