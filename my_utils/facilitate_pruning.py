@@ -2,18 +2,14 @@
 # coding: utf-8
 
 # In[1]:
-
-
 import my_utils.loadModel as lm
 import my_utils.initialize_pruning as ip
 import torch
 
 
 # In[2]:
-
-
 #t = Tensor to be prune, n is ln normalization, dim dimension over which we want to perform 
-def _compute_distance_score(t, n=1, dim_to_keep=[0,1],threshold=1):
+def compute_distance_score(t, n=1, dim_to_keep=[0,1],threshold=1):
         # dims = all axes, except for the one identified by `dim`        
         dim_to_prune = list(range(t.dim()))   #initially it has all dims
         #remove dim which we want to keep from dimstoprune
@@ -55,9 +51,7 @@ def _compute_distance_score(t, n=1, dim_to_keep=[0,1],threshold=1):
 
 
 # In[3]:
-
-
-def sortKernalByDistance(kernalList):
+def sort_kernel_by_distance(kernalList):
     for i in range(len(kernalList)):
         iListLen = len(kernalList[i])
         #print(f'lemgth of list {i} ={iListLen}')
@@ -69,21 +63,18 @@ def sortKernalByDistance(kernalList):
 
 
 # In[4]:
-
-
 def get_k_element(channel_list,k):
     channel_k_list = []
-    for i in range(len(channelTuppleList)):
+    for i in range(len(channel_list)):
+        tempList = []
         for j in range(k):
-            channel_k_list.append(channel_list[i][j])
+            tempList.append(channel_list[i][j])
+        channel_k_list.append(tempList)
     return channel_k_list
 
-
 # In[5]:
-
-
 #t = Tensor to be prune, n is ln normalization, dim dimension over which we want to perform 
-def _compute_kernal_score(t, n=1, dim_to_keep=[0,1],threshold=1):
+def compute_kernal_score(t, n=1, dim_to_keep=[0,1],threshold=1):
         # dims = all axes, except for the one identified by `dim`        
         dim_to_prune = list(range(t.dim()))   #initially it has all dims
         
@@ -108,111 +99,14 @@ def _compute_kernal_score(t, n=1, dim_to_keep=[0,1],threshold=1):
 
 
 # In[6]:
-
-
-def sofKernelByValue(kernelList):
+def sort_kernel_by_value(kernelList):
     return kernelList
 
 
 # In[7]:
-
-
 def displayLayer(channelTupple):
     for i in range(len(channelTupple)):
         for j in range(len(channelTupple[i])):
             if j%3==0:
                 print()
             print(channelTupple[i][j],'\t',end='')  
-
-
-# In[8]:
-
-
-model_name = 'vgg16'
-model = lm.load_model(model_name=model_name,number_of_class=6,pretrainval=True)
-
-
-# In[9]:
-
-
-blocks = ip.getBlockList(modelname=model_name)
-feature_list = ip.getFeatureList(modelname=model_name)
-module = ip.getPruneModule(model,prunelist=feature_list)
-prune_count = ip.getPruneCount(module=module,blocks=blocks,maxpr=0.25)
-print(f"blocks            = {blocks} \n"
-      f"feature list      = {feature_list} \n"
-      f"prune count list  = {prune_count}")
-
-
-# In[10]:
-
-
-channelTuppleList = []
-st =2
-en = 4
-for i in range(st,en):
-    channelTuppleList.append(_compute_distance_score(module[i]._parameters['weight'],threshold=1))
-print("\n\n\nHere is the :",len(channelTuppleList))
-
-
-# In[14]:
-
-
-for i in range(len(channelTuppleList)):
-    for j in range(len(channelTuppleList[i])):
-        print(f"\n\nlength of list: {len(channelTuppleList[i][j])} and 1st 3 ele are\n{(channelTuppleList[i][j][0:3])}")
-
-
-# In[15]:
-
-
-for i in range(len(channelTuppleList)):
-    sortKernalByDistance(channelTuppleList[i])
-
-
-# In[17]:
-
-
-for i in range(len(channelTuppleList)):
-    for j in range(len(channelTuppleList[i])):
-        print(f"\n\nlength of list: {len(channelTuppleList[i][j])} and 1st 3 ele are\n{(channelTuppleList[i][j][0:3])}")
-
-
-# In[ ]:
-
-
-for i in range(len(channelTuppleList)):
-    print("\n\nRow :",i)
-    for j in range(3):
-        for k in range(len(channelTuppleList[i][j])):
-            print(channelTuppleList[i][j][k])
-
-
-# In[ ]:
-
-
-newList = []
-for i in range(len(channelTuppleList)):
-    newList.append(get_k_element(channel_list=channelTuppleList[i],k=prune_count[i]) )
-
-for i in range(len(newList)):
-    print(f"\n\n\nlenth of list: {len(newList[i])}")
-    for j in range(len(newList[i])):
-        
-        for k in range(len(newList[i][j])):
-            print(newList[i][j][k])
-
-
-# In[ ]:
-
-
-for i in range(len(channelTuppleList)):
-    print("\n**************************************************************************************************************************")
-    displayLayer(channelTuppleList[i])
-
-
-# In[ ]:
-
-
-
-
