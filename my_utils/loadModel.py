@@ -109,12 +109,14 @@ def load_saved_model(load_path,device):
 
 # In[7]:
 def freeze(model,model_name):
+    count = 0
     if model_name == 'vgg16':
         for param in model.parameters():
             if count == 30:
               param.requires_grad=True
             else:
               param.requires_grad=False
+        count = count+1	  
                 
     if model_name == 'vgg13':
         for param in model.parameters():

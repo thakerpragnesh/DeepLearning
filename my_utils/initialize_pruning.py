@@ -2,17 +2,10 @@
 # coding: utf-8
 
 # In[1]:
-
-
 import my_utils.loadModel as lm
 import torch
 
-
-# ### block list will give you number of convolution layer layer in each layer
-
 # In[2]:
-
-
 vgg11 = [64, "M", 128, "M", 256, 256, "M", 512, 512, "M", 512, 512, "M"],
 vgg13 = [64, 64, "M", 128, 128, "M", 256, 256, "M", 512, 512, "M", 512, 512, "M"],
 vgg16 = [64, 64, "M", 128, 128, "M", 256, 256, 256, "M", 512, 512, 512, "M", 512, 512, 512, "M"],
@@ -20,8 +13,6 @@ vgg19 = [64, 64, "M", 128, 128, "M", 256, 256, 256, 256, "M", 512, 512, 512, 512
 
 
 # In[3]:
-
-
 def getBlockList(modelname):
     blocks = []
     if modelname == 'vgg11':
@@ -45,8 +36,6 @@ def getBlockList(modelname):
 
 
 # In[4]:
-
-
 def createBlockList(newModel):
     blockList = []
     count = 0
@@ -62,8 +51,6 @@ def createBlockList(newModel):
 # ### Indices of conv layer in vgg11/13/16 are store in this list
 
 # In[5]:
-
-
 def getConvIndex(modelname):
     feature_list = []
     
@@ -88,8 +75,6 @@ def getConvIndex(modelname):
 
 
 # In[6]:
-
-
 def findConvIndex(newModel):
     convListIdx = []
     for i in range(len(newModel.features)):
@@ -99,8 +84,6 @@ def findConvIndex(newModel):
 
 
 # In[7]:
-
-
 def getFeatureList(modelname):
     if modelname == 'vgg11':
         return vgg11
@@ -114,16 +97,14 @@ def getFeatureList(modelname):
 
 
 # In[8]:
-
-
 def createFeatureList(newModel):
     featureList = []
-    for i in range(len(model.features)):
-        if str(model.features[i]).find('Conv') != -1:
-            size = model.features[i]._parameters['weight'].shape
+    for i in range(len(newModel.features)):
+        if str(newModel.features[i]).find('Conv') != -1:
+            size = newModel.features[i]._parameters['weight'].shape
             n = size[0]
             featureList.append(n)
-        if str(model.features[i]).find('Pool') != -1:
+        if str(newModel.features[i]).find('Pool') != -1:
             featureList.append('M')
     #featureList.pop(-1)
     return featureList
@@ -132,8 +113,6 @@ def createFeatureList(newModel):
 # ### Create a list that contain all the conv layer
 
 # In[9]:
-
-
 def getPruneModule(newModel):
     convList = []
     for i in range(len(newModel.features)):
@@ -145,8 +124,6 @@ def getPruneModule(newModel):
 # #### create a pruncount list which prepare a list of number of channel to be prune from each list from max_pruning_ratio
 
 # In[10]:
-
-
 def getPruneCount(module,blocks,maxpr):
     j=0
     count = 0
@@ -161,39 +138,8 @@ def getPruneCount(module,blocks,maxpr):
             frac = 5-j
         prune_prob.append(maxpr/frac)    
         count+=1
-    for i in range(len(Module)):
-        size = Module[i]._parameters['weight'].shape
+    for i in range(len(module)):
+        size = module[i]._parameters['weight'].shape
         c = int(round(size[0]*prune_prob[i]))
         prune_count.append(c)
     return prune_count
-
-
-# In[14]:
-
-
-model = lm.load_model(model_name='vgg13',number_of_class=6)
-featureList = createFeatureList(model)
-convIndex = getConvIndex('vgg16')
-blocks = getBlockList('vgg16')
-
-Module = getPruneModule(model)
-
-prune_count = getPruneCount(module=Module,blocks=blocks, maxpr=.05)
-
-print(f"Feature List  = {featureList}\n"
-      f"prune list    = {convIndex} \n"
-      f"vgg net block = {blocks} \n"
-      f"Prune Count   = {prune_count}")
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
