@@ -1,0 +1,11 @@
+encoder.emb.weight  |  q=0.08383207097649574
+encoder.rnn.weight_ih_l0|  q=0.12825987637043
+encoder.rnn.weight_hh_l0|  q=0.08929647505283356
+encoder.rnn.bias_ih_l0|  q=0.0335215087980032
+encoder.rnn.bias_hh_l0|  q=0.038415080681443226
+encoder.rnn.weight_ih_l1|  q=0.0969282828271389
+encoder.rnn.weight_hh_l1|  q=0.0816217988729477
+encoder.rnn.bias_ih_l1|  q=0.032913385331630705
+encoder.rnn.bias_hh_l1|  q=0.0356025416404009
+decoder.lin.weight  |  q=0.06765299215912819
+decoder.lin.bias    |  q=0.02445519156754017

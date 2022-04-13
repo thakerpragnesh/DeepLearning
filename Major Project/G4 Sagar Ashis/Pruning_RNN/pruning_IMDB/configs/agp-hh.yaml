@@ -1,0 +1,41 @@
+encoder.emb.weight:
+  initial_sparsity: 0.05
+  final_sparsity: 0.85
+  start_epoch: 1
+  end_epoch: 25
+  freq: 3
+
+encoder.rnn.weight_ih_l0:
+  initial_sparsity: 0
+  final_sparsity: 0
+  start_epoch: 1
+  end_epoch: 25
+  freq: 3
+  
+encoder.rnn.weight_hh_l0:
+  initial_sparsity: 0.05
+  final_sparsity: 0.50
+  start_epoch: 1
+  end_epoch: 25
+  freq: 3
+  
+encoder.rnn.weight_ih_l1:
+  initial_sparsity: 0
+  final_sparsity: 0
+  start_epoch: 1
+  end_epoch: 25
+  freq: 3
+  
+encoder.rnn.weight_hh_l1:
+  initial_sparsity: 0.05
+  final_sparsity: 0.50
+  start_epoch: 1
+  end_epoch: 25
+  freq: 3
+  
+decoder.lin.weight:
+  initial_sparsity: 0.05
+  final_sparsity: 0.50
+  start_epoch: 1
+  end_epoch: 25
+  freq: 3
