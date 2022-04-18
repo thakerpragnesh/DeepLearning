@@ -2,6 +2,8 @@
 # coding: utf-8
 
 # In[1]:
+
+
 #import torch library to build neural network
 import torch  # Elementory function of tensor is define in torch package
 import torch.nn as nn # Several layer architectur is define here
@@ -24,7 +26,24 @@ from torchvision.utils import make_grid
 from torchvision import datasets, models, transforms
 
 
+# In[ ]:
+
+
+#device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+"""Check if Cuda GPU is available"""
+#check for CUDA enabled GPU card
+def getDeviceType():
+  if torch.cuda.is_available():
+    return torch.device('cuda')
+  else:
+    return torch.device('cpu')
+device = getDeviceType()
+print(device)
+
+
 # In[2]:
+
+
 """#Training Process
 Below code will work as a base function and provide all the important 
 function like compute loss, accuracy and print result in a perticular 
@@ -74,6 +93,8 @@ def epoch_end(epoch, result):
 
 
 # In[3]:
+
+
 """## Define Training 
 Here we will evalute our model after each epoch on validation dataset using evalute method
 get_lr method returnd last learning rate used in the training
@@ -82,6 +103,8 @@ rate start from 1/10th value of max_lr and slowly increases the value to max_lr 
 then decreases to its initial value for 40% updates and then further decreases to 1/100th of max_lr 
 value to perform final fine tuning.
 """
+
+
 # evalute model on given dataset using given data loader
 @torch.no_grad()
 # evalute model on given dataset using given data loader
@@ -102,7 +125,7 @@ def get_lr(optimizer):
 ######### Main Function To Implement Training #################
 def fit_one_cycle(dataloaders,trainDir,testDir,
                   ModelName, model, device_l=torch.device('cpu'), 
-                  epochs=1, max_lr=.01, weight_decay=0, L1=0,grad_clip=None, opt_func=torch.optim.SGD,logFile=''):
+                  epochs, max_lr, weight_decay=0, L1=0,grad_clip=None, opt_func=torch.optim.SGD,logFile=''):
     torch.cuda.empty_cache()
     global device
     device = device_l
@@ -113,7 +136,7 @@ def fit_one_cycle(dataloaders,trainDir,testDir,
     optimizer = opt_func(model.parameters(), max_lr, weight_decay=weight_decay)
     # Set up one-cycle learning rate scheduler
     sched = torch.optim.lr_scheduler.OneCycleLR(optimizer, max_lr, epochs=epochs, 
-                                                steps_per_epoch=len( dataloaders[trainDir]) )
+                                                steps_per_epoch=len(dataloaders[trainDir]))
     print("Training Starts")
     with open(logFile, "a") as f:
       for epoch in range(epochs):

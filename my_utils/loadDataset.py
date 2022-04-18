@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 #import torch library to build neural network
@@ -10,7 +10,7 @@ import torch.nn as nn # Several layer architectur is define here
 import torch.nn.functional as F # loss function and activation function
 
 
-# In[ ]:
+# In[2]:
 
 
 """
@@ -30,7 +30,7 @@ from torchvision.utils import make_grid
 from torchvision import datasets, models, transforms
 
 
-# In[ ]:
+# In[3]:
 
 
 import os
@@ -41,39 +41,29 @@ def ensure_dir(dir_path):
         os.makedirs(directory)
 
 
-# In[ ]:
+# # It takes location of dataset, selected dataset, name of train and test folder
+
+# In[4]:
 
 
 ######################## Input ###############################
 def setFolderLocation(datasets, selectedDataset='', train='train', test='test'):
-    global DatasetLoc 
-    global SelDataSet 
-    global trainDir 
-    global testDir 
+    global dataset_location 
+    global selected_dataset 
+    global train_directory 
+    global test_directory 
     global data_dir 
     global zipFile
     
-    DatasetLoc = datasets    #'/home/pragnesh/Dataset/'
-    SelDataSet = selectedDataset
-    trainDir = train
-    testDir = test
-    data_dir = DatasetLoc+SelDataSet
+    dataset_location = datasets    #'/home/pragnesh/Dataset/'
+    selected_dataset = selectedDataset
+    train_directory = train
+    test_directory = test
+    data_dir = dataset_location+selected_dataset
     # zipFile = False
 
 
-# In[ ]:
-
-
-#setFolderLocation('/home/pragnesh/Dataset/', 'IntelIC', 'train', 'test')
-
-
-# In[ ]:
-
-
-#print(data_dir)
-
-
-# In[ ]:
+# In[5]:
 
 
 #Data Prepration
@@ -88,16 +78,16 @@ folder for each category and images of respective category should be in
 the respective category folder
 """
 ######################### Data Loading #########################################
-def extractData(destLoc):
+def extractData(dest_location):
   fullpath = data_dir+'.zip'
   zip_ref = zipfile.ZipFile(fullpath, 'r') #Opens the zip file in read mode
-  zip_ref.extractall(destLoc) #Extracts the files into the /tmp folder
-  data_dir = destLoc+'/IntelIC'
-  testDir ='val'
+  zip_ref.extractall(dest_location) #Extracts the files into the /tmp folder
+  data_dir = dest_location+'/IntelIC'
+  test_directory ='val'
   zip_ref.close()
 
 
-# In[1]:
+# In[6]:
 
 
 """
@@ -106,14 +96,18 @@ enviroment without crashing and also do not choose too big batch even
 if dataset is small because it leads to very few updates per epoch
 """
 #################### Create Batch Of Dataset and do data augmentation ###########
-bs = 16
-ImageSize = 224
-def setBatchSize(batchSize=32):
-    bs = batchSize
+batch_size = 16
+image_size = 224
+def setBatchSize(batch_size_l=32):
+    batch_size = batch_size_l
     
-def setImageSize(ImageSizeLocal=224):
-    global ImageSize
-    ImageSize = ImageSizeLocal
+def setImageSize(image_sizeLocal=224):
+    global image_size
+    image_size = image_sizeLocal
+
+
+# In[7]:
+
 
 def dataLoader():
     
@@ -126,13 +120,13 @@ def dataLoader():
     # Data augmentation and normalization for training
     # Just normalization for validation
     data_transforms = {
-        trainDir: transforms.Compose([
-            transforms.RandomResizedCrop(ImageSize),
+        train_directory: transforms.Compose([
+            transforms.RandomResizedCrop(image_size),
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
-        testDir: transforms.Compose([
+        test_directory: transforms.Compose([
             transforms.Resize(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
@@ -141,14 +135,53 @@ def dataLoader():
     }
     image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                               data_transforms[x])
-                      for x in [trainDir, testDir]}
-    dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=bs,
+                      for x in [train_directory, test_directory]}
+    dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
                                                  shuffle=True, num_workers=1)
-                  for x in [trainDir, testDir]}
+                  for x in [train_directory, test_directory]}
 
-    dataset_sizes = {x: len(image_datasets[x]) for x in [trainDir, testDir]}
-    class_names = image_datasets[trainDir].classes
+    dataset_sizes = {x: len(image_datasets[x]) for x in [train_directory, test_directory]}
+    class_names = image_datasets[train_directory].classes
     return dataloaders
+
+
+# In[8]:
+
+
+def dataLoaderEval():
+    
+    """
+    Data Augmentaion generally help in reducing overfitting error during 
+    trainng process and thus we are performing randon horizontal flip and 
+    random crop during training but during validation as no training happens 
+    we dont perform data augmentation
+    """
+    # Data augmentation and normalization for training
+    # Just normalization for validation
+    data_transforms = {
+        train_directory: transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop,
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ]),
+        test_directory: transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ]),
+    }
+    image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
+                                              data_transforms[x])
+                      for x in [train_directory, test_directory]}
+    dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
+                                                 shuffle=True, num_workers=1)
+                  for x in [train_directory, test_directory]}
+
+    dataset_sizes = {x: len(image_datasets[x]) for x in [train_directory, test_directory]}
+    class_names = image_datasets[train_directory].classes
+    return dataloaders, data_transforms
 
 
 # In[ ]:
