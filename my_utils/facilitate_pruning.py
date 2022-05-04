@@ -9,7 +9,7 @@ import torch
 
 # In[2]:
 #t = Tensor to be prune, n is ln normalization, dim dimension over which we want to perform 
-def compute_distance_score(t, n=1, dim_to_keep=[0,1],threshold=1):
+def compute_distance_score(t, n=1, dim_to_keep=[0,1],k=1):
         # dims = all axes, except for the one identified by `dim`        
         dim_to_prune = list(range(t.dim()))   #initially it has all dims
         #remove dim which we want to keep from dimstoprune
@@ -39,13 +39,31 @@ def compute_distance_score(t, n=1, dim_to_keep=[0,1],threshold=1):
         for j in range(size[1]):
             idxtupple = []
             print('.',end='')
+            maxValue = -1
+            maxIdx = -1
             for i1 in range(size[0]):
                 for i2 in range((i1+1),size[0]):
                     dist[j][i1][i2] = torch.norm( (module_buffer[i1][j]-module_buffer[i2][j]) ,p=1)
                     dist[j][i2][i1] = dist[j][i1][i2]
                     
-                    if dist[j][i1][i2] < threshold:
+                    if len(idxtupple) <k:
                         idxtupple.append([j,i1,i2,dist[j][i1][i2]])
+                        idx = len(idxtupple)-1
+                        maxValue = idxtupple[idx][3]
+                        maxIdx = idx
+                        continue
+                        
+                    if dist[j][i1][i2] < maxValue:
+                        del idxtupple[maxIdx]
+                        idxtupple.append([j,i1,i2,dist[j][i1][i2]])
+                        
+                        maxValue = idxtupple[0][3]
+                        maxIdx = 0
+                        for l in range(1,len(idxtupple)):
+                            if maxValue< idxtupple[l][3]:
+                                maxValue = idxtupple[l][3]
+                                maxIdx = l
+                        
             channelList.append(idxtupple)
         return channelList
 
